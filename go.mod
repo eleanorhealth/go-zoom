@@ -1,4 +1,4 @@
-module github.com/fterrag/go-zoom
+module github.com/eleanorhealth/go-zoom
 
 go 1.19
 

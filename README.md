@@ -16,7 +16,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/fterrag/go-zoom/zoom"
+	"github.com/eleanorhealth/go-zoom/zoom"
 )
 
 func main() {

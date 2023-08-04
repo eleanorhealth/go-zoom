@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/eleanorhealth/go-common/pkg/errs"
-	"github.com/fterrag/go-zoom/zoom/tokenmutex"
+	"github.com/eleanorhealth/go-zoom/zoom/tokenmutex"
 	"github.com/golang-jwt/jwt/v4"
 	querystring "github.com/google/go-querystring/query"
 )

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fterrag/go-zoom/zoom"
+	"github.com/eleanorhealth/go-zoom/zoom"
 	"github.com/stretchr/testify/assert"
 )
 
