@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	authURL = "https://zoom.us/oauth/token"
-	baseURL = "https://api.zoom.us/v2"
+	authURL     = "https://zoom.us/oauth/token"
+	zoomBaseURL = "https://api.zoom.us/v2"
 )
 
 type Client struct {
@@ -28,6 +28,8 @@ type Client struct {
 	clientID     string
 	clientSecret string
 	tokenMutex   TokenMutex
+
+	baseURL string
 
 	Users    *UsersService
 	Meetings *MeetingsService
@@ -69,6 +71,7 @@ func NewClient(httpClient *http.Client, accountID, clientID, clientSecret string
 		clientID:     clientID,
 		clientSecret: clientSecret,
 		tokenMutex:   tokenMutex,
+		baseURL:      zoomBaseURL,
 	}
 
 	c.Users = &UsersService{c}
@@ -141,7 +144,7 @@ func (c *Client) request(ctx context.Context, method string, path string, query 
 		return nil, errs.Wrap(err, "encoding URL query")
 	}
 
-	url := fmt.Sprintf("%s%s", baseURL, path)
+	url := fmt.Sprintf("%s%s", c.baseURL, path)
 	if len(q) > 0 {
 		url = fmt.Sprintf("%s?%s", url, q.Encode())
 	}
