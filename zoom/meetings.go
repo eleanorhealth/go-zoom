@@ -51,6 +51,7 @@ type MeetingsListItem struct {
 	UUID      string    `json:"uuid"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetings
 func (m *MeetingsService) List(ctx context.Context, userID string, opts *MeetingsListOptions) (*MeetingsListResponse, *http.Response, error) {
 	out := &MeetingsListResponse{}
 
@@ -223,6 +224,7 @@ type MeetingsCreateResponse struct {
 	Type            int                                    `json:"type"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetingCreate
 func (m *MeetingsService) Create(ctx context.Context, userID string, opts *MeetingsCreateOptions) (*MeetingsCreateResponse, *http.Response, error) {
 	out := &MeetingsCreateResponse{}
 
@@ -240,6 +242,7 @@ type MeetingsDeleteOptions struct {
 	CancelMeetingReminder *bool   `url:"cancel_meeting_reminder,omitempty"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetingDelete
 func (m *MeetingsService) Delete(ctx context.Context, meetingID int64, opts *MeetingsDeleteOptions) (*http.Response, error) {
 	mID := strconv.Itoa(int(meetingID))
 
