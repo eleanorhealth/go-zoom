@@ -18,7 +18,12 @@ var client *zoom.Client
 
 func TestMain(m *testing.M) {
 	httpClient := &http.Client{}
-	client = zoom.NewClient(httpClient, os.Getenv("ZOOM_ACCOUNT_ID"), os.Getenv("ZOOM_CLIENT_ID"), os.Getenv("ZOOM_CLIENT_SECRET"), nil)
+	client = zoom.NewClient(httpClient,
+		os.Getenv("ZOOM_ACCOUNT_ID"),
+		os.Getenv("ZOOM_CLIENT_ID"),
+		os.Getenv("ZOOM_CLIENT_SECRET"),
+		nil,
+	)
 
 	os.Exit(m.Run())
 }

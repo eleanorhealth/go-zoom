@@ -2,6 +2,7 @@ package zoom
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -113,7 +114,7 @@ type UsersDeleteOptions struct {
 }
 
 func (u *UsersService) Delete(ctx context.Context, userID string, opts *UsersDeleteOptions) (*http.Response, error) {
-	res, err := u.client.request(ctx, http.MethodDelete, "/users/"+url.QueryEscape(userID), opts, nil, nil)
+	res, err := u.client.request(ctx, http.MethodDelete, fmt.Sprintf("/users/%s", url.QueryEscape(userID)), opts, nil, nil)
 	if err != nil {
 		return res, errs.Wrap(err, "making request")
 	}

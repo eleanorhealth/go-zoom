@@ -53,7 +53,11 @@ type TokenMutex interface {
 	Clear(context.Context) error
 }
 
-// NewClient assumes the usage of Server-to-Server OAuth app (https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/)
+var _ TokenMutex = (*tokenmutex.Redis)(nil)
+var _ TokenMutex = (*tokenmutex.Default)(nil)
+
+// NewClient assumes the usage of Server-to-Server OAuth app
+// https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/
 func NewClient(httpClient *http.Client, accountID, clientID, clientSecret string, tokenMutex TokenMutex) *Client {
 	if tokenMutex == nil {
 		tokenMutex = tokenmutex.NewDefault()
@@ -137,9 +141,9 @@ func (c *Client) request(ctx context.Context, method string, path string, query 
 		return nil, errs.Wrap(err, "encoding URL query")
 	}
 
-	u := baseURL + path
+	url := fmt.Sprintf("%s%s", baseURL, path)
 	if len(q) > 0 {
-		u = u + "?" + q.Encode()
+		url = fmt.Sprintf("%s?%s", url, q.Encode())
 	}
 
 	reader := bytes.NewReader(nil)
@@ -152,12 +156,12 @@ func (c *Client) request(ctx context.Context, method string, path string, query 
 		reader = bytes.NewReader(b)
 	}
 
-	req, err := http.NewRequest(method, u, reader)
+	req, err := http.NewRequestWithContext(ctx, method, url, reader)
 	if err != nil {
 		return nil, errs.Wrap(err, "making new HTTP request")
 	}
 
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := c.httpClient.Do(req)
@@ -204,13 +208,13 @@ func (c *Client) accessToken(ctx context.Context) (string, time.Time, error) {
 	query.Set("grant_type", "account_credentials")
 	query.Set("account_id", c.accountID)
 
-	req, err := http.NewRequestWithContext(ctx, "POST", authURL+"?"+query.Encode(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s?%s", authURL, query.Encode()), nil)
 	if err != nil {
 		return "", time.Time{}, errs.Wrap(err, "making new HTTP request")
 	}
 
-	auth := base64.URLEncoding.EncodeToString([]byte(c.clientID + ":" + c.clientSecret))
-	req.Header.Set("Authorization", "Basic "+auth)
+	auth := base64.URLEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", c.clientID, c.clientSecret)))
+	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", auth))
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {

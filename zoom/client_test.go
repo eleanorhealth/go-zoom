@@ -15,7 +15,7 @@ func TestMeetingSDKJWT(t *testing.T) {
 	sdkKey := "foobar"
 	sdkSecret := "bazcat"
 	meetingNumber := int64(123)
-	role := 1
+	role := 1 // host
 	expiration := 1 * time.Hour
 
 	tokenStr, err := MeetingSDKJWT(sdkKey, sdkSecret, meetingNumber, role, expiration)
