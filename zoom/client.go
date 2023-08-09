@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	authURL     = "https://zoom.us/oauth/token"
+	zoomAuthURL = "https://zoom.us/oauth/token"
 	zoomBaseURL = "https://api.zoom.us/v2"
 )
 
@@ -144,9 +144,9 @@ func (c *Client) request(ctx context.Context, method string, path string, query 
 		return nil, errs.Wrap(err, "encoding URL query")
 	}
 
-	url := fmt.Sprintf("%s%s", c.baseURL, path)
+	u := fmt.Sprintf("%s%s", c.baseURL, path)
 	if len(q) > 0 {
-		url = fmt.Sprintf("%s?%s", url, q.Encode())
+		u = fmt.Sprintf("%s?%s", u, q.Encode())
 	}
 
 	reader := bytes.NewReader(nil)
@@ -159,7 +159,7 @@ func (c *Client) request(ctx context.Context, method string, path string, query 
 		reader = bytes.NewReader(b)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, url, reader)
+	req, err := http.NewRequestWithContext(ctx, method, u, reader)
 	if err != nil {
 		return nil, errs.Wrap(err, "making new HTTP request")
 	}
@@ -211,7 +211,7 @@ func (c *Client) accessToken(ctx context.Context) (string, time.Time, error) {
 	query.Set("grant_type", "account_credentials")
 	query.Set("account_id", c.accountID)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s?%s", authURL, query.Encode()), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s?%s", zoomAuthURL, query.Encode()), nil)
 	if err != nil {
 		return "", time.Time{}, errs.Wrap(err, "making new HTTP request")
 	}
