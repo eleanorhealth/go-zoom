@@ -108,6 +108,7 @@ func TestRedis_Set_Clear(t *testing.T) {
 
 	err = mutex.Clear(context.Background())
 	assert.NoError(err)
+
 	token, err = s.Get(redisDefaultKey)
 	assert.Equal("", token)
 	assert.Error(err)

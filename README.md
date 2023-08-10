@@ -1,6 +1,6 @@
 # go-zoom
 
-The `zoom` packages provides a lightweight [Zoom API](https://marketplace.zoom.us/docs/api-reference/introduction/) client. Coverage of endpoints is minimal, but [users.go](zoom/users.go) and [meetings.go](zoom/meetings.go) should act as good examples for implementing support for additional endpoints.
+The `zoom` packages provides a lightweight [Zoom API](https://marketplace.zoom.us/docs/api-reference/introduction/) client. Coverage of available endpoints is minimal, but [users.go](zoom/users.go) and [meetings.go](zoom/meetings.go) should act as good examples for implementing support for additional endpoints.
 
 This package is built to be used with [Server-to-Server OAuth](https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/) apps.
 
@@ -23,7 +23,13 @@ func main() {
 	ctx := context.Background()
 
 	httpClient := &http.Client{}
-	client := zoom.NewClient(httpClient, os.Getenv("ZOOM_ACCOUNT_ID"), os.Getenv("ZOOM_CLIENT_ID"), os.Getenv("ZOOM_CLIENT_SECRET"), nil)
+	client := zoom.NewClient(
+		httpClient,
+		os.Getenv("ZOOM_ACCOUNT_ID"),
+		os.Getenv("ZOOM_CLIENT_ID"),
+		os.Getenv("ZOOM_CLIENT_SECRET"),
+		nil,
+	)
 
 	res, _, err := client.Users.List(ctx, nil)
 	if err != nil {

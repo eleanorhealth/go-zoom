@@ -2,6 +2,7 @@ package zoom
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -64,6 +65,7 @@ type UsersListItemCustomAttribute struct {
 	Value string `json:"value"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/users
 func (u *UsersService) List(ctx context.Context, opts *UsersListOptions) (*UsersListResponse, *http.Response, error) {
 	out := &UsersListResponse{}
 
@@ -97,6 +99,7 @@ type UsersCreateResponse struct {
 	Type      int    `json:"type"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/userCreate
 func (u *UsersService) Create(ctx context.Context, opts *UsersCreateOptions) (*UsersCreateResponse, *http.Response, error) {
 	out := &UsersCreateResponse{}
 
@@ -112,8 +115,9 @@ type UsersDeleteOptions struct {
 	Action *string `url:"action,omitempty"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/userDelete
 func (u *UsersService) Delete(ctx context.Context, userID string, opts *UsersDeleteOptions) (*http.Response, error) {
-	res, err := u.client.request(ctx, http.MethodDelete, "/users/"+url.QueryEscape(userID), opts, nil, nil)
+	res, err := u.client.request(ctx, http.MethodDelete, fmt.Sprintf("/users/%s", url.QueryEscape(userID)), opts, nil, nil)
 	if err != nil {
 		return res, errs.Wrap(err, "making request")
 	}

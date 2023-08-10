@@ -3,6 +3,7 @@ package zoom
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -50,10 +51,11 @@ type MeetingsListItem struct {
 	UUID      string    `json:"uuid"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetings
 func (m *MeetingsService) List(ctx context.Context, userID string, opts *MeetingsListOptions) (*MeetingsListResponse, *http.Response, error) {
 	out := &MeetingsListResponse{}
 
-	res, err := m.client.request(ctx, http.MethodGet, "/users/"+url.QueryEscape(userID)+"/meetings", opts, nil, out)
+	res, err := m.client.request(ctx, http.MethodGet, fmt.Sprintf("/users/%s/meetings", url.QueryEscape(userID)), opts, nil, out)
 	if err != nil {
 		return nil, nil, errs.Wrap(err, "making HTTP request")
 	}
@@ -86,14 +88,14 @@ type MeetingsCreateOptionsSettings struct {
 	JoinBeforeHost *bool `json:"join_before_host,omitempty"`
 }
 
-type MeetingsCreateResponseOccurances struct {
+type MeetingsCreateResponseOccurences struct {
 	Duration     int       `json:"duration,omitempty"`
 	OccurrenceID string    `json:"occurrence_id,omitempty"`
 	StartTime    time.Time `json:"start_time,omitempty"`
 	Status       string    `json:"status,omitempty"`
 }
 
-type MeetingsCreateResponseRecurrance struct {
+type MeetingsCreateResponseRecurrence struct {
 	EndDateTime    time.Time `json:"end_date_time,omitempty"`
 	EndTimes       int       `json:"end_times,omitempty"`
 	MonthlyDay     int       `json:"monthly_day,omitempty"`
@@ -207,11 +209,11 @@ type MeetingsCreateResponse struct {
 	HostEmail       string                                 `json:"host_email"`
 	ID              int64                                  `json:"id"`
 	JoinURL         string                                 `json:"join_url"`
-	Occurrences     *MeetingsCreateResponseOccurances      `json:"occurrences"`
+	Occurrences     *MeetingsCreateResponseOccurences      `json:"occurrences"`
 	Password        string                                 `json:"password"`
 	Pmi             string                                 `json:"pmi"`
 	PreSchedule     bool                                   `json:"pre_schedule"`
-	Recurrence      *MeetingsCreateResponseRecurrance      `json:"recurrence"`
+	Recurrence      *MeetingsCreateResponseRecurrence      `json:"recurrence"`
 	RegistrationURL string                                 `json:"registration_url"`
 	Settings        *MeetingCreateResponseSettings         `json:"settings"`
 	StartTime       time.Time                              `json:"start_time"`
@@ -222,10 +224,11 @@ type MeetingsCreateResponse struct {
 	Type            int                                    `json:"type"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetingCreate
 func (m *MeetingsService) Create(ctx context.Context, userID string, opts *MeetingsCreateOptions) (*MeetingsCreateResponse, *http.Response, error) {
 	out := &MeetingsCreateResponse{}
 
-	res, err := m.client.request(ctx, http.MethodPost, "/users/"+url.QueryEscape(userID)+"/meetings", nil, opts, out)
+	res, err := m.client.request(ctx, http.MethodPost, fmt.Sprintf("/users/%s/meetings", url.QueryEscape(userID)), nil, opts, out)
 	if err != nil {
 		return nil, res, errs.Wrap(err, "making HTTP request")
 	}
@@ -239,9 +242,11 @@ type MeetingsDeleteOptions struct {
 	CancelMeetingReminder *bool   `url:"cancel_meeting_reminder,omitempty"`
 }
 
+// https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetingDelete
 func (m *MeetingsService) Delete(ctx context.Context, meetingID int64, opts *MeetingsDeleteOptions) (*http.Response, error) {
 	mID := strconv.Itoa(int(meetingID))
-	res, err := m.client.request(ctx, http.MethodDelete, "/meetings/"+url.QueryEscape(mID), opts, nil, nil)
+
+	res, err := m.client.request(ctx, http.MethodDelete, fmt.Sprintf("/meetings/%s", url.QueryEscape(mID)), opts, nil, nil)
 	if err != nil {
 		return res, errs.Wrap(err, "making request")
 	}

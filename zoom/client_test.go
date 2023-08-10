@@ -1,13 +1,41 @@
 package zoom
 
 import (
+	"context"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
+	"github.com/eleanorhealth/go-zoom/zoom/tokenmutex"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/stretchr/testify/assert"
 )
+
+const testAccountId = "foo"
+const testClientId = "bar"
+const testClientSecret = "secret"
+
+func testClient(h http.HandlerFunc) (*Client, *httptest.Server) {
+	if h == nil {
+		h = func(w http.ResponseWriter, r *http.Request) {
+			b, _ := json.Marshal(nil)
+			w.Header().Add("Content-Type", "application/json")
+			w.Write(b)
+		}
+	}
+
+	testServer := httptest.NewServer(h)
+	tokenMutex := tokenmutex.NewDefault()
+	tokenMutex.Set(context.Background(), "test-token", time.Now().Add(time.Hour))
+
+	zoomClient := NewClient(testServer.Client(), testAccountId, testClientId, testClientSecret, tokenMutex)
+
+	zoomClient.baseURL = testServer.URL
+
+	return zoomClient, testServer
+}
 
 func TestMeetingSDKJWT(t *testing.T) {
 	assert := assert.New(t)
@@ -15,7 +43,7 @@ func TestMeetingSDKJWT(t *testing.T) {
 	sdkKey := "foobar"
 	sdkSecret := "bazcat"
 	meetingNumber := int64(123)
-	role := 1
+	role := 1 // host
 	expiration := 1 * time.Hour
 
 	tokenStr, err := MeetingSDKJWT(sdkKey, sdkSecret, meetingNumber, role, expiration)
