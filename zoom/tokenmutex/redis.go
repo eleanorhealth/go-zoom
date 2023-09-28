@@ -14,13 +14,13 @@ const redisDefaultKey = "zoom_access_token"
 const redisLockKey = "zoom_access_token_lock"
 
 type Redis struct {
-	client *redis.Client
+	client redis.UniversalClient
 	locker *redislock.Client
 	lock   *redislock.Lock
 	key    string
 }
 
-func NewRedis(client *redis.Client, key string) *Redis {
+func NewRedis(client redis.UniversalClient, key string) *Redis {
 	if client == nil {
 		panic("client is nil")
 	}
