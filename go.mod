@@ -9,7 +9,7 @@ require (
 
 require (
 	github.com/bsm/redislock v0.9.3
-	github.com/golang-jwt/jwt/v4 v4.4.3
+	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/redis/go-redis/v9 v9.0.4
 	github.com/stretchr/testify v1.8.1
 )
